@@ -1,4 +1,5 @@
 from math import floor, sqrt
+from timeit import timeit
 
 
 def is_almost(n, m, d=1):
@@ -32,20 +33,29 @@ def isqrt_sum(n):
 
 
 def isqrt_dicho(n, a=0, b=100):
-    def f(x, n):
-        return x*x-n
-
     mid = (a + b) // 2
 
-    while not is_almost(f(mid, n), 0, 0):
-        print(f(mid, n), n)
-        if f(a, n)*f(mid, n) < 0:
+    while mid*mid > n or (mid+1)*(mid+1) <= n:
+        if mid*mid > n:
             b = mid
-        elif f(b, n)*f(mid, n) < 0:
+        elif (mid+1)*(mid+1) <= n:
             a = mid
         else:
-            return a if f(a, n) == 0 else b
+            return mid
+        mid = (a + b) // 2
+
     return mid
+
+
+def isqrt_dicho_rec(n, a=0, b=100):
+    mid = (a + b) // 2
+
+    if(mid*mid <= n and (mid+1)*(mid+1) > n):
+        return mid
+    elif mid*mid > n:
+        return isqrt_dicho_rec(n, a, mid)
+    else:
+        return isqrt_dicho_rec(n, mid, b)
 
 
 def final_check(fs):
@@ -55,4 +65,14 @@ def final_check(fs):
                 n), f"Erreur {f.__name__} ({f(n)} != {isqrt_builtin(n)})"
 
 
-final_check([isqrt_builtin, isqrt_hard, isqrt_sum, isqrt_dicho])
+def time_all(fs, N):
+    for f in fs:
+        print(f"{f.__name__} : {timeit(lambda: isqrt_hard(1000000), number=N) / N}s")
+
+
+fs = [isqrt_builtin, isqrt_hard, isqrt_sum,
+      isqrt_dicho, isqrt_dicho_rec]
+
+
+final_check(fs)
+time_all(fs, 10000)

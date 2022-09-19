@@ -2,6 +2,9 @@ from math import sqrt
 from numbers import Number
 from pyclbr import Function
 
+import numpy as np
+import matplotlib.pyplot as plt
+
 
 def is_almost(n, m, d=1):
     return n <= m + d and n >= m - d
@@ -89,7 +92,7 @@ def deriv(f: Function, x: Number, h: Number = .01) -> Number:
     f : Function
         function to derive
     x : Number
-        point where to calculate the derivative 
+        point where to calculate the derivative
     h : Number, optional
         precision
 
@@ -171,5 +174,22 @@ def newton(f: Function, x: Number, eps: Number = 1e-15, debug: bool = False) -> 
         return x
     return newton(f, x - f(x)/fderiv(f)(x), debug=debug)
 
+
+x = np.linspace(-2, 2, 100)
+
+plt.figure(figsize=(12, 12))
+plt.rcParams.update({'font.size': 18})
+
+plt.plot(x, f(x))
+plt.plot(x, G(x))
+plt.plot(x, g(x))
+
+plt.title('Visualise Exact and Approximated Derivatives')
+plt.legend(loc='best')
+
+plt.axvline(0)
+plt.axhline(0)
+
+plt.show()
 
 assert is_almost(newton(g, 1), sqrt(2), .01), "Erreur newton"
