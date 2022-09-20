@@ -16,3 +16,8 @@
 
 # Ignore pdf files
 **/*.pdf
+
+# Ignore all Projet-XXX folders content except README.md file
+**/Projet-*/*
+**/Projet-*/*.*
+!**/Projet-*/README.md

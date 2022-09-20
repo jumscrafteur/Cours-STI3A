@@ -30,13 +30,11 @@ def di(f: Function, a: Number, b: Number, d: Number = 1e-16) -> Number:
         root
     """
     mid = (a+b)/2
-    while not is_almost(f(mid), 0, d):
-        if f(a)*f(mid) < 0:
+    while mid not in (a, b) and b-a >= d:
+        if f(a)*f(mid) <= 0:
             b = mid
         elif f(b)*f(mid) < 0:
             a = mid
-        else:
-            return a if f(a) == 0 else b
 
         mid = (a + b) / 2
     return mid
@@ -66,7 +64,7 @@ def di2(f: Function, a: Number, b: Number, d: Number = 1e-16) -> Number:
     """
     mid = (a+b)/2
 
-    if is_almost(f(mid), 0, d):
+    if mid in (a, b) or b-a < d:
         return mid
 
     if f(a)*f(mid) < 0:
