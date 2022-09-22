@@ -96,4 +96,42 @@ assert [i for i in range(100) if isprime(i)] == \
         43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97],\
     "Erreur isprime"
 
+# n = 20
+
 comp = {i for i in range(2, n+1) if any([i/j == i//j for j in range(2, i-1)])}
+
+for nb in comp:
+    assert not isprime(nb), f"Erreur comp ({nb} is prime) "
+
+comp2 = {i for j in range(2, n+1) for i in range(2*j, n+1, j)}
+
+assert comp == comp2, "Erreur comp2"
+
+
+comp3 = {i*j for i in range(2, n+1)
+         for j in range(2, int(n/i) + 1)}
+
+assert comp == comp3, "Erreur comp3"
+
+
+primes = tuple(i for i in range(2, n+1) if i not in comp)
+
+assert primes == tuple(k for k in range(1, n+1) if isprime(k))
+
+
+def crange(c1, c2):
+    return [chr(n) for n in range(ord(c1), ord(c2) + 1)]
+
+
+assert "".join(crange('A', 'Z')) == 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+
+
+def charrange(*args):
+    assert len(args) % 2 == 0
+    return crange(args[0], args[1]) + charrange(*args[2:]) if len(args) != 0 else []
+
+
+assert "".join(charrange('A', 'Z', 'a', 'z', '0', '9')) == \
+    'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789' and \
+    "".join(charrange()) == '', \
+    "Erreur charrange"
