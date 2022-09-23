@@ -10,6 +10,7 @@ def is_almost(n, m, d=1):
     return n <= m + d and n >= m - d
 
 
+# TODO : Simplifier les cas gauche / droite
 def di(f: Function, a: Number, b: Number, d: Number = 1e-16) -> Number:
     """Found the root of a lineare expression between [a;b]
 

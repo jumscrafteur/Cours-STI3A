@@ -186,48 +186,26 @@ def simp(e: Expr) -> Expr:
         match e:
             case BinExpr(int(), int()): return eval(e)
             case Add(0, e) | Add(e, 0): return e
-            case Add(a, b):
-                if type(a) == Mul and type(b) == Mul:
-                    if a.a == b.a:
-                        return Mul(simp(Add(a.b, b.b)), a.a)
-                    elif a.b == b.b:
-                        return Mul(simp(Add(a.a, b.a)), a.b)
-                    elif a.a == b.b:
-                        return Mul(simp(Add(a.b, b.a)), a.a)
-                    elif a.b == b.a:
-                        return Mul(simp(Add(a.a, b.b)), a.b)
-                    return Add(simp(a), simp(b))
-                elif a == b:
-                    return Mul(2, simp(a))
-                else:
-                    return Add(simp(a), simp(b))
+            case Add(Mul() as a, Mul() as b) if a.a == b.a: return Mul(simp(Add(a.b, b.b)), a.a)
+            case Add(Mul() as a, Mul() as b) if a.b == b.a: return Mul(simp(Add(a.a, b.b)), a.b)
+            case Add(Mul() as a, Mul() as b) if a.a == b.b: return Mul(simp(Add(a.b, b.a)), a.a)
+            case Add(Mul() as a, Mul() as b) if a.b == b.b: return Mul(simp(Add(a.a, b.a)), a.b)
+            case Add(a, b) if a == b: return Mul(2, simp(a))
             # case Sub(a, b): return Add(a, Mul(-1, b))
             case Sub(0, a): return Mul(-1, b)
             case Sub(a, -0): return a
             case Mul(0, e) | Mul(e, 0): return 0
             case Mul(1, e) | Mul(e, 1): return e
-            case Mul(a, b):
-                if type(a) == int and type(b) == Add:
-                    return Add(simp(Mul(a, b.a)), simp(Mul(a, b.b)))
-                elif type(b) == int and type(a) == Add:
-                    return Add(simp(Mul(b, a.a)), simp(Mul(b, a.b)))
-
-                elif type(a) == int and type(b) == Mul and type(b.a) == int:
-                    return Mul(simp(Mul(a, b.a)), simp(b.b))
-                elif type(b) == int and type(a) == Mul and type(a.a) == int:
-                    return Mul(simp(Mul(b, a.a)), simp(a.b))
-                elif type(a) == int and type(b) == Mul and type(b.b) == int:
-                    return Mul(simp(Mul(a, b.a)), simp(b.b))
-                elif type(b) == int and type(a) == Mul and type(a.b) == int:
-                    return Mul(simp(Mul(b, a.a)), simp(a.b))
-
-                elif a == b:
-                    return Pow(simp(a), 2)
-                else:
-                    return Mul(simp(a), simp(b))
-            # case Div(a, b): return Mul(a, Pow(b, -1))
+            case Mul(int() as a, Add() as b): return Add(simp(Mul(a, b.a)), simp(Mul(a, b.b)))
+            case Mul(Add() as a, int() as b): return Add(simp(Mul(b, a.a)), simp(Mul(b, a.b)))
+            case Mul(int() as a, Mul(int(), _) as b): return Mul(simp(Mul(a, b.a)), simp(b.b))
+            case Mul(int() as a, Mul(_, int()) as b): return Mul(simp(Mul(a, b.a)), simp(b.b))
+            case Mul(Mul(int(), _) as a, int() as b): return Mul(simp(Mul(b, a.a)), simp(a.b))
+            case Mul(Mul(_, int()) as a, int() as b): return Mul(simp(Mul(b, a.a)), simp(a.b))
+            case Mul(a, b) if a == b: return Pow(simp(a), 2)
             case Pow(e, 1): return e
-            case Pow(0, n): return 1
+            case Pow(0, _): return 1
+            case BinExpr(a, b): return e.__class__(a=simp(a), b=simp(b))
             case _: return e
 
     return fixpoint(z, e)
@@ -303,6 +281,9 @@ class F():
     def __str__(self) -> str:
         return str(estr(simp(self.expr)))
 
+    def __call__(self, var, val):
+        return eval(self.expr, var.expr, val)
+
     def D(self, var):
         print(var.expr)
         print(self.expr)
@@ -343,21 +324,18 @@ assert str(10**F1) == "100",\
     f'{str(10**F1)} != "100"'
 
 
-X = F('y')  # declare a symbolic variable
+X = F('x')  # declare a symbolic variable
 def ln(x): return F(Call("ln", x.expr))  # declare a symbolic function
 
 
 FF1 = 1 + 2*ln(X**2 - 1)
 
-# assert str(FF1) == "(1+(2*ln(((x^2)-1))))", \
-#     f'{str(FF1)} != "(1+(2*ln(((x^2)-1))))"'
+assert str(FF1) == "(1+(2*ln(((x^2)-1))))", \
+    f'{str(FF1)} != "(1+(2*ln(((x^2)-1))))"'
 
 
-# (2*((1/((y^2)-1))*(2*y)))
-# (2*((1/((x^2)-1))*(2*x)))
-print(FF1.D(X))
+assert FF1(X, 2) == 3.1972245773362196
 
-FF1()
 
 PLOT = False
 SELECT = 10

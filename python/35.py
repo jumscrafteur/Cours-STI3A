@@ -67,7 +67,7 @@ def final_check(fs):
 
 def time_all(fs, N):
     for f in fs:
-        print(f"{f.__name__} : {timeit(lambda: isqrt_hard(1000000), number=N) / N}s")
+        print(f"{f.__name__} : {timeit(lambda: f(1000000), number=N) / N}s")
 
 
 fs = [isqrt_builtin, isqrt_hard, isqrt_sum,

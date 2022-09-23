@@ -98,6 +98,7 @@ assert [i for i in range(100) if isprime(i)] == \
 
 # n = 20
 
+# TODO : cas invalide
 comp = {i for i in range(2, n+1) if any([i/j == i//j for j in range(2, i-1)])}
 
 for nb in comp:
