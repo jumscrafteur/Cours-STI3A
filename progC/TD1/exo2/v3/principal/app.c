@@ -1,18 +1,14 @@
-#include "symbol.h"
+#include "suite.h"
 #include <stdio.h>
 #include <stdlib.h>
-
 int main(int argc, char **argv)
 {
   int n = argc > 1 ? atoi(argv[1]) : 0;
-  char *ns;
-  printf("La suite de %d nombre(s)\n", n);
+
+  printf("Des suites de symboles(s)\n");
   while (n-- > 0)
-  {
-    ns = symbol_new_symbol();
-    printf("%d %s\n", ns, ns);
-  }
-  free(ns);
+    suite_e_suite(n);
+
   printf("\n");
   return EXIT_SUCCESS;
 }

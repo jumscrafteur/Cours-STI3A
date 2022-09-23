@@ -21,3 +21,5 @@
 **/Projet-*/*
 **/Projet-*/*.*
 !**/Projet-*/README.md
+
+!Makefile
