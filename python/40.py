@@ -80,12 +80,12 @@ def estr(expr: Expr):
         case _: raise ValueError(expr)
 
 
-assert estr(Call("ln", "x")) == "ln(x)"
-assert estr(Add("x", "y")) == "(x+y)"
-assert estr(Sub("x", "y")) == "(x-y)"
-assert estr(Mul("x", "y")) == "(x*y)"
-assert estr(Div("x", "y")) == "(x/y)"
-assert estr(Pow("x", "y")) == "(x^y)"
+assert estr(Call("ln", "x")) == "ln(x)", f'{estr(Call("ln", "x"))} != "ln(x)"'
+assert estr(Add("x", "y")) == "(x+y)", f'{estr(Add("x", "y"))} != "(x+y)"'
+assert estr(Sub("x", "y")) == "(x-y)", f'{estr(Sub("x", "y"))} != "(x-y)"'
+assert estr(Mul("x", "y")) == "(x*y)", f'{estr(Mul("x", "y"))} != "(x*y)"'
+assert estr(Div("x", "y")) == "(x/y)", f'{estr(Div("x", "y"))} != "(x/y)"'
+assert estr(Pow("x", "y")) == "(x^y)", f'{estr(Pow("x", "y"))} != "(x^y)"'
 
 
 def eval(expr: Expr, var: str = "x", val: Number = 0):
@@ -126,14 +126,21 @@ def D(expr: Expr, var: str = "x"):
     match expr:
         case Number(): return 0
         case str(): return 1 if expr == var else 0
-        case Sub(a, b): return Sub(D(a), D(b))
-        case Add(a, b): return Add(D(a), D(b))
-        case Mul(a, b): return Add(Mul(D(a), b), Mul(a, D(b)))
-        case Div(a, b): return Div(Sub(Mul(D(a), b), Mul(a, D(b))), Pow(b, 2))
-        case Pow(a, b): return Mul(b, Mul(D(a), Pow(a, b-1)))
+        case Sub(a, b): return Sub(D(a, var), D(b, var))
+        case Add(a, b): return Add(D(a, var), D(b, var))
+        case Mul(a, b): return Add(Mul(D(a, var), b), Mul(a, D(b, var)))
+        case Div(a, b): return Div(Sub(Mul(D(a, var), b), Mul(a, D(b, var))), Pow(b, 2))
+        case Pow(a, b): return Mul(b, Mul(D(a, var), Pow(a, b-1)))
         case Call(a, b):
-            match a:
-                case 'ln': return Div(D(b), b)
+            match b:
+                case str():
+                    if b != var:
+                        raise ValueError(b)
+                    match a:
+                        case 'ln': return Div(1, var)
+                        case 'cos': return Mul(-1, Call("sin", var))
+                        case 'sin': return Call("cos", var)
+                case BinExpr(): return Mul(Rep(D(Call(a, "x")), "x", b), D(b, var))
 
 
 # Check Const
@@ -158,9 +165,13 @@ assert eval(D(Div("x", Sub("x", 3)))) == -1/3
 assert eval(D(Pow("x", 2)), val=3) == 6
 assert eval(D(Pow(Sub("x", Pow("x", 2)), 2)), val=1) == 0
 
-# Check ln(x) et ln(u)
+# Check ln(x)
 assert eval(D(Call("ln", "x")), val=2) == .5
+
+
 assert eval(D(Call("ln", Pow("x", 2))), val=2) == 1
+
+assert eval(D(Call("cos", Pow("x", 2)))) == 0
 
 
 def fixpoint(f, e):
@@ -173,10 +184,9 @@ def fixpoint(f, e):
 def simp(e: Expr) -> Expr:
     def z(e):
         match e:
+            case BinExpr(int(), int()): return eval(e)
             case Add(0, e) | Add(e, 0): return e
             case Add(a, b):
-                if type(a) == int and type(b) == int:
-                    return eval(e)
                 if type(a) == Mul and type(b) == Mul:
                     if a.a == b.a:
                         return Mul(simp(Add(a.b, b.b)), a.a)
@@ -191,7 +201,9 @@ def simp(e: Expr) -> Expr:
                     return Mul(2, simp(a))
                 else:
                     return Add(simp(a), simp(b))
-            case Sub(a, b): return Add(a, Mul(-1, b))
+            # case Sub(a, b): return Add(a, Mul(-1, b))
+            case Sub(0, a): return Mul(-1, b)
+            case Sub(a, -0): return a
             case Mul(0, e) | Mul(e, 0): return 0
             case Mul(1, e) | Mul(e, 1): return e
             case Mul(a, b):
@@ -211,8 +223,6 @@ def simp(e: Expr) -> Expr:
 
                 elif a == b:
                     return Pow(simp(a), 2)
-                elif type(a) == int and type(b) == int:
-                    return eval(Mul(a, b))
                 else:
                     return Mul(simp(a), simp(b))
             # case Div(a, b): return Mul(a, Pow(b, -1))
@@ -224,41 +234,140 @@ def simp(e: Expr) -> Expr:
 
 
 # e + 0 == 0
-assert estr(simp(Add("x", 0))) == "x"
+assert estr(simp(Add("x", 0))) == "x", f'{estr(simp(Add("x", 0)))} != "x"'
 
 # e+e = 2e
-assert estr(simp(Add("x", "x"))) == "(2*x)"
+assert estr(simp(Add("x", "x"))) == "(2*x)",\
+    f'{estr(simp(Add("x", "x")))} != "(2*x)"'
 
 # 0*e = 0
-assert estr(simp(Mul("x", 0))) == 0
+assert estr(simp(Mul("x", 0))) == 0,\
+    f'{estr(simp(Mul("x", 0)))} != 0'
 
 # 1*e = e
-assert estr(simp(Mul("x", 1))) == "x"
+assert estr(simp(Mul("x", 1))) == "x",\
+    f'{estr(simp(Mul("x", 1)))} != "x"'
 
 # factorisation
-assert estr(simp(Add(Mul(3, "x"), Mul(4, "x")))) == "(7*x)"
+assert estr(simp(Add(Mul(3, "x"), Mul(4, "x")))) == "(7*x)",\
+    f'{estr(simp(Add(Mul(3, "x"), Mul(4, "x"))))} != "(7*x)"'
 
 # devellopement
-assert estr(simp(Mul(3, Add(4, "x")))) == "(12+(3*x))"
-assert estr(simp(Mul(3, Mul(4, "x")))) == "(12*x)"
-assert estr(simp(Mul(3, Mul("x", 4)))) == "(12*x)"
-assert estr(simp(Mul(Mul("x", 4), 3))) == "(12*x)"
+assert estr(simp(Mul(3, Add(4, "x")))) == "(12+(3*x))",\
+    f'{estr(simp(Mul(3, Add(4, "x"))))} != "(12+(3*x))"'
+assert estr(simp(Mul(3, Mul(4, "x")))) == "(12*x)",\
+    f'{estr(simp(Mul(3, Mul(4, "x"))))} != "(12*x)"'
+assert estr(simp(Mul(3, Mul("x", 4)))) == "(12*x)",\
+    f'{estr(simp(Mul(3, Mul("x", 4))))} != "(12*x)"'
+assert estr(simp(Mul(Mul("x", 4), 3))) == "(12*x)",\
+    f'{estr(simp(Mul(Mul("x", 4), 3)))} != "(12*x)"'
 
 assert estr(simp(D(Mul(Call("ln", "x"), Add(Mul(3, Pow("x", 2)), 1))))) ==\
-    "(((1/x)*((3*(x^2))+1))+(ln(x)*(6*x)))"
+    "(((1/x)*((3*(x^2))+1))+(ln(x)*(6*x)))",\
+    f'{estr(simp(D(Mul(Call("ln", "x"), Add(Mul(3, Pow("x", 2)), 1)))))} != (((1/x)*((3*(x^2))+1))+(ln(x)*(6*x)))'
 
 
-print(estr(Call("ln", "x")))
-print(estr(Rep(Call("ln", "x"), "x", Pow("x", 2))))
+def dis(op, s, o):
+    match o:
+        case Number(): return F(op(s.expr, o))
+        case F(): return F(op(s.expr, o.expr))
+        case _: raise ValueError(o)
+
+
+def rdis(op, s, o):
+    match o:
+        case Number(): return F(op(o, s.expr))
+        case F(): return F(op(o.expr, s.expr))
+        case _: raise ValueError(o)
+
+
+class F():
+    def __init__(self, expr):
+        self.expr = simp(expr)
+
+    def __sub__(self, other_expr): return dis(Sub, self, other_expr)
+    def __add__(self, other_expr): return dis(Add, self, other_expr)
+    def __mul__(self, other_expr): return dis(Mul, self, other_expr)
+    def __truediv__(self, other_expr): return dis(Div, self, other_expr)
+    def __pow__(self, other_expr): return dis(Pow, self, other_expr)
+
+    def __rsub__(self, other_expr): return rdis(Sub, self, other_expr)
+    def __radd__(self, other_expr): return rdis(Add, self, other_expr)
+    def __rmul__(self, other_expr): return rdis(Mul, self, other_expr)
+    def __rtruediv__(self, other_expr): return rdis(Div, self, other_expr)
+    def __rpow__(self, other_expr): return rdis(Pow, self, other_expr)
+
+    def __repr__(self) -> str:
+        return str(estr(simp(self.expr)))
+
+    def __str__(self) -> str:
+        return str(estr(simp(self.expr)))
+
+    def D(self, var):
+        print(var.expr)
+        print(self.expr)
+        return F(D(simp(self.expr), var.expr))
+
+
+F1 = F(Add(1, 1))
+
+
+# add
+assert str(F1+10) == "12",\
+    f'{str(F1+10)} != "12"'
+assert str(10+F1) == "12",\
+    f'{str(10+F1)} != "12"'
+
+# sub
+assert str(F1-10) == "-8",\
+    f'{str(F1-10)} != "-8"'
+assert str(10-F1) == "8",\
+    f'{str(10-F1)} != "8"'
+
+# mul
+assert str(F1*10) == "20",\
+    f'{str(F1*10)} != "20"'
+assert str(10*F1) == "20",\
+    f'{str(10*F1)} != "20"'
+
+# div
+assert str(F1/10) == "0.2",\
+    f'{str(F1/10)} != "0.2"'
+assert str(10/F1) == "5.0",\
+    f'{str(10/F1)} != "5.0"'
+
+# pow
+assert str(F1**10) == "1024",\
+    f'{str(F1**10)} != "1024"'
+assert str(10**F1) == "100",\
+    f'{str(10**F1)} != "100"'
+
+
+X = F('y')  # declare a symbolic variable
+def ln(x): return F(Call("ln", x.expr))  # declare a symbolic function
+
+
+FF1 = 1 + 2*ln(X**2 - 1)
+
+# assert str(FF1) == "(1+(2*ln(((x^2)-1))))", \
+#     f'{str(FF1)} != "(1+(2*ln(((x^2)-1))))"'
+
+
+# (2*((1/((y^2)-1))*(2*y)))
+# (2*((1/((x^2)-1))*(2*x)))
+print(FF1.D(X))
+
+FF1()
 
 PLOT = False
+SELECT = 10
 
 if PLOT == True:
     x = "x"
-    # f1 = Add(1, Mul(2, Call("ln", Sub(Pow(x, 2), 1))))
+    f1 = Add(1, Mul(2, Call("ln", Sub(Pow(x, 2), 1))))
     f2 = Mul(Call("ln", x), Add(Mul(3, Pow(x, 2)), 1))
 
-    # df1 = simp(D(f1))
+    df1 = simp(D(f1))
     df2 = simp(D(f2))
 
     plt.figure(figsize=(12, 8))
@@ -266,19 +375,24 @@ if PLOT == True:
 
     X = [-2 + i/100 for i in range(500)]
 
-    # Yf1 = [eval(f1, x, X) for X in X]
-    Yf2 = [eval(f2, x, X) for X in X]
-
-    # Ydf1 = [eval(df1, x, X) for X in X]
-    Ydf2 = [eval(df2, x, X) for X in X]
-
     plt.ylim([-5, 10])  # limit the y axis
 
-    # plt.plot(X, Yf1, 'b', label=estr(f1), linewidth=2)
-    plt.plot(X, Yf2, 'r', label=estr(f2), linewidth=2)
-
-    # plt.plot(X, Yfd1, 'p', label=estr(f1), linewidth=2)
-    plt.plot(X, Ydf2, 'y', label=estr(df2), linewidth=2)
+    if SELECT & 8:
+        Yf1 = [eval(f1, x, X) for X in X]
+        plt.plot(X, Yf1, color='blue', label="f1 : " +
+                 estr(simp(f1)), linewidth=2)
+    if SELECT & 4:
+        Yf2 = [eval(f2, x, X) for X in X]
+        plt.plot(X, Yf2, color='red', label="f2 : " +
+                 estr(simp(f2)), linewidth=2)
+    if SELECT & 2:
+        Ydf1 = [eval(df1, x, X) for X in X]
+        plt.plot(X, Ydf1, color='purple',
+                 label="df1 : " + estr(simp(df1)), linewidth=2)
+    if SELECT & 1:
+        Ydf2 = [eval(df2, x, X) for X in X]
+        plt.plot(X, Ydf2, color='orange',
+                 label="df2 : " + estr(simp(df2)), linewidth=2)
 
     plt.legend(loc='best')
     plt.axvline(0)

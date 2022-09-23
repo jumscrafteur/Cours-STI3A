@@ -10,7 +10,7 @@ int main(int argc, char **argv)
   while (n-- > 0)
   {
     ns = symbol_new_symbol();
-    printf("%p %s\n", ns, ns);
+    printf("%s\n", ns);
   }
   free(ns);
   printf("\n");
