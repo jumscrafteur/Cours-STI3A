@@ -24,6 +24,7 @@ def isqrt_hard(n):
 
 def isqrt_sum(n):
     test_nb = 0
+
     sq = 0
     while sq <= n:
         test_nb += 1
