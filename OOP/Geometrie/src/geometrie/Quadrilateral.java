@@ -1,6 +1,6 @@
 package geometrie;
 
-public class Quadrilateral {
+public class Quadrilateral extends Polygon {
 
 	private Segment[] theSegments = new Segment[4];
 
@@ -9,7 +9,7 @@ public class Quadrilateral {
 		theSegments[1] = new Segment(p2, p3);
 		theSegments[2] = new Segment(p3, p4);
 		theSegments[3] = new Segment(p4, p1);
-		System.out.println("Quadrilateral");
+		// System.out.println("Quadrilateral");
 	}
 
 	public Quadrilateral() {
@@ -26,6 +26,9 @@ public class Quadrilateral {
 
 	public double getPerimeter() {
 		double perimeter = 0;
+
+		System.out.println("Computing the perimeter of a quadrilateral");
+
 		perimeter = theSegments[0].length() + theSegments[1].length()
 				+ theSegments[2].length() + theSegments[3].length();
 		return perimeter;

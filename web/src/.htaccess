@@ -1,0 +1,7 @@
+RewriteEngine on
+
+RewriteCond %{DOCUMENT_ROOT}/static/$1 -f
+RewriteRule ^(.*)$ static/$1 [L]
+
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule  ^(.*)$ index.php?url=$1 [QSA,L]

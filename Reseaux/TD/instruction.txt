@@ -1,0 +1,2 @@
+docker build -t progsys .
+docker run --rm -ti -v ${PWD}:/app progsys

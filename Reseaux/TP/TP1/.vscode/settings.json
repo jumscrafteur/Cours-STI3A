@@ -1,0 +1,33 @@
+{
+    "files.associations": {
+        "*.php": "php",
+        "types.h": "c",
+        "string.h": "c",
+        "in.h": "c",
+        "inet.h": "c",
+        "system_error": "c",
+        "string": "c",
+        "iosfwd": "c",
+        "__bit_reference": "c",
+        "bitset": "c",
+        "chrono": "c",
+        "hash_map": "c",
+        "unordered_map": "c",
+        "algorithm": "c",
+        "array": "c",
+        "vector": "c",
+        "string_view": "c"
+    },
+    "triggerTaskOnSave.tasks": {
+        "C/C++: gcc build active file": [
+            "*.c",
+            "*.h",
+        ],
+    },
+    "triggerTaskOnSave.resultIndicator": "statusBar.background",
+    "triggerTaskOnSave.failureColour": "#ff5555",
+    "triggerTaskOnSave.successColour": "#6272a4",
+    "triggerTaskOnSave.showNotifications": false,
+    "triggerTaskOnSave.resultIndicatorResetTimeout": 1,
+    "workbench.colorCustomizations": {}
+}

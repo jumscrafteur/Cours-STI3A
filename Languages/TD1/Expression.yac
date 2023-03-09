@@ -1,0 +1,41 @@
+%{
+#include <stdio.h>
+
+int yylex(void);
+int yyerror(char* s);
+
+%}
+
+%token INTEGER
+
+%%
+S : E ';'     {$$ = $1;  printf ("%d;",$$);}
+  // | E ';' S {$$ = $1;  printf ("Expression reconnue \nResultat : %d\n",$$);} Element de gramaire testé en TD non concluant
+  | S E ';'     {$$ = $2;  printf ("%d;",$$);}
+  ;
+
+E : E '+' T  {$$ = $1 + $3;}
+  | T        {$$ = $1;}
+  ;
+
+E : E '-' T  {$$ = $1 - $3;}
+  | '-' T    {$$ = -$2;}
+  ;
+
+T : T '*' F  {$$ = $1 * $3;}
+  | F        {$$ = $1;} 
+  ;
+
+F : '(' E ')' {$$ = $2;} 
+  | INTEGER   {$$ = $1;} 
+  ;
+
+%%
+int main(){
+  yyparse();
+}
+
+int yyerror (char *s)
+{
+	return 0;
+}

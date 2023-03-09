@@ -1,14 +1,19 @@
 package safes;
 
-import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.Set;
+import java.util.TreeMap;
+import java.util.TreeSet;
 
 import valuables.Gemstone;
+import valuables.NotExpertisedException;
 
 public class Safe {
   private int currentGemsNb = 0;
   final int capacity;
   private boolean opened = false;
-  private ArrayList<Gemstone> myContent = new ArrayList<Gemstone>();
+
+  private TreeMap<Gemstone, TreeSet<Gemstone>> myContent = new TreeMap<Gemstone, TreeSet<Gemstone>>();
 
   /**
    * 
@@ -50,9 +55,16 @@ public class Safe {
       return;
     }
 
-    this.currentGemsNb++;
-    gemstone.setMySafe(this);
-    myContent.add(gemstone);
+    Set<Gemstone> keys = myContent.keySet();
+
+    if (keys.contains(gemstone)) {
+      TreeSet<Gemstone> equSet = myContent.get(gemstone);
+      equSet.add(gemstone);
+    } else {
+      // TreeSet<Gemstone> equSet = new TreeSet();
+      // myContent.put(gemstone)
+
+    }
 
   }
 
@@ -92,8 +104,15 @@ public class Safe {
   public double getValue() {
     double sum = 0;
 
-    for (Gemstone gemstone : myContent) {
-      sum += gemstone.getValue();
+    Iterator<Gemstone> iterator = myContent.iterator();
+
+    while (iterator.hasNext()) {
+      try {
+        sum += iterator.next().getValue();
+      } catch (NotExpertisedException e) {
+        iterator.next().expertize();
+        // e.printStackTrace();
+      }
     }
 
     return sum;

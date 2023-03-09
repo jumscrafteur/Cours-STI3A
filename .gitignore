@@ -16,6 +16,8 @@
 
 # Ignore pdf files
 **/*.pdf
+**/*.zip
+**/__pycache__
 
 # Ignore all Projet-XXX folders content except README.md file
 **/Projet-*/*
@@ -23,3 +25,4 @@
 !**/Projet-*/README.md
 
 !Makefile
+!Dockerfile

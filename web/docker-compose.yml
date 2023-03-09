@@ -1,0 +1,31 @@
+version: "3.9"
+services:
+  web:
+    build: .
+    ports:
+      - "80:80"
+    volumes:
+      - ./src/:/var/www/html/
+      - ./LeQuotidienIntemporel.conf:/etc/apache2/sites-available/LeQuotidienIntemporel.conf
+    extra_hosts:
+      - "LeQuotidienIntemporel.local:127.0.0.1"
+    hostname: LeQuotidienIntemporel.local
+    domainname: local
+
+  db:
+    image: mariadb
+    restart: always
+    environment:
+      MARIADB_ROOT_PASSWORD: example
+    volumes:
+      - ./db/data:/var/lib/mysql
+    ports:
+      - 3306:3306
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8081:8080
+    links:
+      - db

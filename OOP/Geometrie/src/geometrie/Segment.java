@@ -8,7 +8,7 @@ public class Segment {
 	public Segment(Point start, Point end) {
 		this.start = start;
 		this.end = end;
-		System.out.println("A line segment has been created");
+		// System.out.println("A line segment has been created");
 	}
 
 	public Point getStart() {

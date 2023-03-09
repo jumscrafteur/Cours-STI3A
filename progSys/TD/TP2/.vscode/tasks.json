@@ -1,0 +1,42 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "type": "shell",
+            "label": "C/C++: gcc build active file",
+            "command": "/usr/bin/gcc",
+            "args": [
+                "${file}",
+                "${fileDirname}/cmds/cat.c",
+                "${fileDirname}/cmds/echo.c",
+                "${fileDirname}/cmds/touch.c",
+                "${fileDirname}/cmds/cp.c",
+                "${fileDirname}/cmds/head.c",
+                "${fileDirname}/cmds/tail.c",
+                "${fileDirname}/cmds/clean.c",
+                "${fileDirname}/cmds/grep.c",
+                "${fileDirname}/cmds/wc.c",
+                "-o",
+                "${fileDirname}/${fileBasenameNoExtension}"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "runOptions": {
+                "runOn": "default"
+            },
+            "presentation": {
+                "reveal": "silent",
+                "clear": true,
+                "focus": false,
+            }
+        }
+    ],
+}

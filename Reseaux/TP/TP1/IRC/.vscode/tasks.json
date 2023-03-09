@@ -1,0 +1,38 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "type": "shell",
+            "label": "C/C++: gcc build active file",
+            "command": "/usr/bin/gcc",
+            "args": [
+                "-Wall",
+                "${file}",
+                "${fileDirname}/includes/list.c",
+                "${fileDirname}/includes/utils.c",
+                "${fileDirname}/includes/time.c",
+                "${fileDirname}/includes/storage.c",
+                "-o",
+                "${fileDirname}/${fileBasenameNoExtension}",
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "runOptions": {
+                "runOn": "default"
+            },
+            "presentation": {
+                "reveal": "silent",
+                "clear": true,
+                "focus": false,
+            }
+        }
+    ],
+}

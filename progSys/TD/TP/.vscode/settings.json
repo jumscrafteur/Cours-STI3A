@@ -1,0 +1,20 @@
+{
+  "files.associations": {
+    "*.php": "php",
+    "cstdlib": "c",
+    "mini_lib.h": "c",
+    "stdio.h": "c",
+    "unistd.h": "c",
+    "atomic": "c",
+    "bitset": "c"
+  },
+  "spellright.language": [
+    "fr",
+    "en"
+  ],
+  "spellright.documentTypes": [
+    "markdown",
+    "latex",
+    "plaintext"
+  ]
+}

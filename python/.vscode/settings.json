@@ -1,0 +1,12 @@
+{
+  "python.analysis.typeCheckingMode": "off",
+  "spellright.language": [
+    "en"
+  ],
+  "spellright.documentTypes": [
+    "markdown",
+    "latex",
+    "plaintext",
+    "python"
+  ]
+}

@@ -1,0 +1,1 @@
+gcc main.c -Wall cmds/cat.c cmds/echo.c cmds/touch.c cmds/cp.c cmds/head.c cmds/tail.c cmds/clean.c cmds/grep.c cmds/wc.c -o main

@@ -1,0 +1,5 @@
+exo 6.
+free ne libère pas vraiment la memoire , il set la valeur du pointeur a un pointeur nul et deplace l'Index pointeur
+
+exo 22.
+Le problème de ces fonctions est qu'elles de s'arrentent pas tant qu'elle n'ont pas rencontré un '\0', d'un point de vu sécurité , on pourrais volontairement ne pas mettre de caractère de fin de chaine pour pouvoir lire des zones de mémoire normalement innaccessible

@@ -1,0 +1,6 @@
+{
+    "files.associations": {
+        "*.php": "php",
+        "types.h": "c"
+    }
+}
