@@ -18,6 +18,8 @@
 **/*.pdf
 **/*.zip
 **/__pycache__
+**/*.db
+**/*.sqlite
 
 # Ignore all Projet-XXX folders content except README.md file
 **/Projet-*/*
