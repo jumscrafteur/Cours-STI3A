@@ -74,4 +74,4 @@ t = Tree(
 
 print(minimax(t))
 
-# t.show()
+t.show()
