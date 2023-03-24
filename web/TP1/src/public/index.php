@@ -1,7 +1,8 @@
 <?php
-define("ROOT", str_replace("/public/index.php", "", $_SERVER["SCRIPT_FILENAME"]));
+require_once("../bootstrap.php");
 
-require_once(ROOT . "/app/controllers/Doctors.php");
+require_once(APP_ROOT . "/controllers/Doctors.php");
+
 
 $ds = new Doctors();
 

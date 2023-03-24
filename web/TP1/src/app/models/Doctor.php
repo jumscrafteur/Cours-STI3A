@@ -1,5 +1,5 @@
 <?php
-require_once(ROOT . "/app/librairies/Database.php");
+require_once(APP_ROOT . "/librairies/Database.php");
 
 class Doctor
 {

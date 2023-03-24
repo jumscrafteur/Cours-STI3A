@@ -2,11 +2,6 @@
 
 class Database
 {
-    private $host = "db";
-    private $dbname = "TP";
-    private $username = "root";
-    private $password = "marseille";
-
     private $db;
     private $query;
 
@@ -15,9 +10,9 @@ class Database
         $this->db = null;
         try {
             $this->db = new PDO(
-                "mysql:host=" . $this->host . ";dbname=" . $this->dbname,
-                $this->username,
-                $this->password
+                "mysql:host=" . DB_HOST . ";dbname=" . DB_NAME,
+                DB_USER,
+                DB_PASS
             );
         } catch (PDOException $exception) {
             echo "Error:" . $exception->getMessage();

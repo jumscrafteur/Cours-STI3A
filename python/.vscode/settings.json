@@ -1,6 +1,7 @@
 {
   "python.analysis.typeCheckingMode": "off",
   "spellright.language": [
+    "fr",
     "en"
   ],
   "spellright.documentTypes": [

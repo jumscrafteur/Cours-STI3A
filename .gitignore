@@ -25,6 +25,7 @@
 **/Projet-*/*
 **/Projet-*/*.*
 !**/Projet-*/README.md
+/web/**/*
 
 !Makefile
 !Dockerfile

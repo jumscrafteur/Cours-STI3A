@@ -3,7 +3,7 @@ abstract class Controller
 {
     public function loadModel(string $model)
     {
-        require_once(ROOT . '/app/models/' . $model . '.php');
+        require_once(APP_ROOT . '/models/' . $model . '.php');
 
         return new $model();
     }
@@ -15,10 +15,10 @@ abstract class Controller
 
         ob_start();
 
-        require_once(ROOT . '/app/views/' . strtolower(get_class($this)) . '/' . $vue . '.php');
+        require_once(APP_ROOT . '/views/' . strtolower(get_class($this)) . '/' . $vue . '.php');
 
         $content = ob_get_clean();
 
-        require_once(ROOT . '/app/views/layout.php');
+        require_once(APP_ROOT . '/views/layout.php');
     }
 }
